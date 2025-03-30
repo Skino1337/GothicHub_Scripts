@@ -72,7 +72,7 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
         # if 'VDF_Meshes_Addon' not in str(mrm_file_path):  # Gothic II
         #     continue
 
-        # if 'TPL_MAGICDOOR_V01' not in str(mrm_file_path):  # NW_HARBOUR_BARREL_01
+        # if '1H_HAMMER_GODENDAR' not in str(mrm_file_path):  # NW_HARBOUR_BARREL_01
         #     continue
 
         multiresolution_mesh = None

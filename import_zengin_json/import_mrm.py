@@ -153,7 +153,7 @@ def load_from_gothic_hub_scripts(config_file_path):
         # if 'MOD_KM_Meshes' not in str(mrm_json_file_path):  # Gothic II
         #     continue
 
-        # if 'KM_VOB_BARRELTABLE' not in str(mrm_json_file_path):  # NW_HARBOUR_BARREL_01
+        # if '1H_HAMMER_GODENDAR' not in str(mrm_json_file_path):  # NW_HARBOUR_BARREL_01
         #     continue
 
         mrm_json_data = mrm_json_file_path.read_text()

@@ -27,6 +27,10 @@ def create_materials(zengin_materials, texture_path_dict, verbose=False):
             image.source = 'FILE'
             image.filepath = texture_path_dict[zengin_texture_name]
 
+            # well, if u can fix textures (at least as an option) that would be good,
+            # because texture = just material property in vob file, not real path
+            # so it can save material-texture field even if there is not file
+
         material = bpy.data.materials.new(name=material_name)
         material.use_nodes = True
         material.diffuse_color = [c / 255 for c in zengin_material['color']]
@@ -39,6 +43,9 @@ def create_materials(zengin_materials, texture_path_dict, verbose=False):
         principled_bsdf.location = (400, 0)
         principled_bsdf.inputs['Metallic'].default_value = 1.0
         principled_bsdf.inputs['Roughness'].default_value = 1.0
+
+        if 'Specular IOR Level' in principled_bsdf.inputs:
+            principled_bsdf.inputs['Specular IOR Level'].default_value = 0.0
 
         material_output = nodes.get('Material Output')
         if material_output is None:

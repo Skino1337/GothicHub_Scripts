@@ -203,7 +203,8 @@ def pasrse_vob(vob_list):
         elif class_name == 'Earthquake':
             vob_dict['radius'] = vob.radius
             vob_dict['duration'] = vob.duration
-            vob_dict['amplitude'] = vob.amplitude
+            amplitude = [rf(vob.amplitude.x), rf(vob.amplitude.y), rf(vob.amplitude.z)]
+            vob_dict['amplitude'] = amplitude
         elif class_name == 'CutsceneCamera':
             vob_dict['trajectory_for'] = vob.trajectory_for
             vob_dict['target_trajectory_for'] = vob.target_trajectory_for
@@ -502,7 +503,7 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
     for zen_file_path in zen_file_path_list:
         relative_path = zen_file_path.relative_to(extract_path).parent  # / zen_file_path.stem
 
-        # if 'FIRETREE_LAMP' not in str(zen_file_path):  # ARCHOLOS_SEWERS
+        # if 'NEWWORLD.ZEN' not in str(zen_file_path):  # ARCHOLOS_SEWERS
         #     continue
 
         print(f'[WORLD] Start parse file: [{relative_path / zen_file_path.stem}.ZEN]')
