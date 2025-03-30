@@ -1,0 +1,14 @@
+.venv
+/.venv/
+.idea
+/.idea/
+.git
+/.git/
+__pycache__
+/__pycache__/
+output
+/output/
+data
+/data/
+information.txt
+test.py
