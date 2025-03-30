@@ -13,9 +13,15 @@ def save_file(vfs, node, path):
             save_file(vfs, node_children, subpath)
     if node.is_file():
         node_name = node.name
-        file_format, file_name = node_name[::-1].split('.', 1)
-        file_name = file_name[::-1]
-        file_format = file_format[::-1]
+        file_name = ""
+        file_format = ""
+        if '.' in node_name:
+            file_format, file_name = node_name[::-1].split('.', 1)
+            file_name = file_name[::-1]
+            file_format = file_format[::-1]
+        else:
+            file_name = node_name
+
         file_to_save = Path(path)
 
         if file_format == 'MAN' and '-' in file_name:

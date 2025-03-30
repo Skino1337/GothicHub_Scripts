@@ -12,7 +12,12 @@ def rf(f, accuracy=4):
 
 
 def parse_mdh(model_hierarchy, rename_bone_function=None):
-    skeleton_name = model_hierarchy.source_path.split('\\')[-1].split('.')[0]
+    skeleton_name = ""
+    try:
+        skeleton_name = model_hierarchy.source_path
+    except:
+        print(f'[MODEL HIERARCHY] can\'t read source_path, set empty string.')
+    skeleton_name = skeleton_name.split('\\')[-1].split('.')[0]
 
     root_translation = [model_hierarchy.root_translation.x, model_hierarchy.root_translation.y, model_hierarchy.root_translation.z]
     root_translation = [rf(f) for f in root_translation]

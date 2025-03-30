@@ -33,7 +33,18 @@ def parse_materials(material_list):
         material_dict['environmentalMapping'] = material.environment_mapping
         material_dict['environmentalMappingStrength'] = rf(material.environment_mapping_strength)
         material_dict['waveMode'] = material.wave_mode.name
-        material_dict['waveSpeed'] = material.wave_speed.name
+
+
+        # ValueError: 32 is not a valid WaveSpeed
+        wave_speed = 'NONE'
+        try:
+            wave_speed = material.wave_speed.name
+        except ValueError as error:
+            print(f'[MATERIAL] WARNING: Material have wrong value in parameter [waveSpeed], set default value to "NONE". Error: "{error}"')
+        if wave_speed != 'NONE':
+            material_dict['waveSpeed'] = wave_speed
+
+
         material_dict['waveMaxAmplitude'] = rf(material.wave_amplitude)
         material_dict['waveGridSize'] = rf(material.wave_grid_size)
         material_dict['ignoreSunLight'] = material.ignore_sun

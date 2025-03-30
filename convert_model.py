@@ -33,8 +33,8 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
 
         # if 'Gothic II' not in str(mdl_file_path):  # Gothic II
         #     continue
-        #
-        # if 'CHESTBIG_OCCHESTMEDIUM' not in str(mdl_file_path):  # NW_HARBOUR_BARREL_01, CHESTBIG_OCCHESTMEDIUM, BARBQ_SCAV
+
+        # if 'CR2_BODY' not in str(mdl_file_path):  # NW_HARBOUR_BARREL_01, CHESTBIG_OCCHESTMEDIUM, BARBQ_SCAV
         #     continue
 
         model = None
