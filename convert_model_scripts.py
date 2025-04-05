@@ -31,7 +31,7 @@ def parse_msb(model_script):
 
         events = []
         for event in animation.event_tags:
-            # arghs is not released for now(((
+            # args is not released for now(((
             event_dict = {'type': 'EVENT_TAG',
                           'frame': event.frame,
                           'frames': event.frames,
@@ -155,6 +155,8 @@ def convert(extract_path, intermediate_path, convert_path):
 
         model_script = ModelScript.load(msb_file_path)
         msb_data = parse_msb(model_script)
+        group_name = msb_file_path.stem.upper().split('_')[0]
+        msb_data['group_name'] = group_name
 
         json_data = json.dumps(msb_data, indent=4, ensure_ascii=False)
         save_path.write_text(json_data, encoding='utf-8')

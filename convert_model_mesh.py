@@ -150,7 +150,7 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
         # if 'FIREPLACE_HIGH2' not in str(mdm_file_path):  # CHESTBIG_ADD_STONE_LOCKED, CHESTBIG_OCCHESTMEDIUM, GOL_BODY
         #     continue
 
-        # if 'LOCKED' in str(mdm_file_path):  # Addon, Gothic II,
+        # if 'HUM_BODY_NAKED0' not in str(mdm_file_path):  # Addon, Gothic II,
         #     continue
 
         model_mesh = None
@@ -254,7 +254,7 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
         save_path_model_mesh = save_path / (mdm_file_path.stem + '.MDM.json')
         save_path_model_mesh.write_text(json_data, encoding='utf-8')
 
-        print(f'prepared: {relative_path}')
+        print(f'prepared: {relative_path / mdm_file_path.stem}.MDM')
 
     if __name__ != '__main__':
         print(f'[MODEL MESH] Start convert MDM via blender')

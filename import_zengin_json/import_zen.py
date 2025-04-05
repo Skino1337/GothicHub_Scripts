@@ -131,7 +131,7 @@ def split_mesh(mesh_obj, mesh, zengin_materials):
     water_texture_list = []
     no_collision_texture_list = []
     portal_texture_list = []
-    s_texture_list = []
+    sector_texture_list = []
     ghostoccluder_texture_list = []
     sunblocker_texture_list = []
     collision_texture_list = []
@@ -145,7 +145,7 @@ def split_mesh(mesh_obj, mesh, zengin_materials):
         elif material_name.startswith('P:') or material_name.startswith('PI:') or material_name.startswith('PN:'):
             portal_texture_list.append(material_name)
         elif material_name.startswith('S:'):
-            s_texture_list.append(material_name)
+            sector_texture_list.append(material_name)
         elif material_name == 'GHOSTOCCLUDER':
             ghostoccluder_texture_list.append(material_name)
         elif material_name.startswith('SUN_BLOCKER'):
@@ -154,8 +154,11 @@ def split_mesh(mesh_obj, mesh, zengin_materials):
             collision_texture_list.append(material_name)
 
     create_mesh_texture_depend(mesh_obj, 'WATER', water_texture_list, 'INCLUDE')
-    create_mesh_texture_depend(mesh_obj, 'PORTALS', portal_texture_list, 'INCLUDE')
-    create_mesh_texture_depend(mesh_obj, 'S', s_texture_list, 'INCLUDE')
+    create_mesh_texture_depend(mesh_obj, 'PORTAL', portal_texture_list, 'INCLUDE')
+
+    # https://github.com/postm1/SpacerNET_Union/commit/bdcb6dae4bd37442ca9698d6e81769e8ba909fe6
+    create_mesh_texture_depend(mesh_obj, 'SECTOR', sector_texture_list, 'INCLUDE')
+
     create_mesh_texture_depend(mesh_obj, 'GHOSTOCCLUDER', ghostoccluder_texture_list, 'INCLUDE')
     create_mesh_texture_depend(mesh_obj, 'SUN_BLOCKER', sunblocker_texture_list, 'INCLUDE')
     create_mesh_texture_depend(mesh_obj, 'COLLISION', collision_texture_list, 'INCLUDE')
@@ -165,7 +168,7 @@ def split_mesh(mesh_obj, mesh, zengin_materials):
     # bpy.ops.outliner.orphans_purge(do_recursive=True)
 
 
-def create_zen_mesh(name, mesh_dict, materials_by_index):
+def create_zen_mesh(name, mesh_dict, materials_by_index, use_gothic_normals=False):
     global load_mesh_module
 
     assert 'positions' in mesh_dict
@@ -208,7 +211,8 @@ def create_zen_mesh(name, mesh_dict, materials_by_index):
         uv_list.append(uv)
 
     # for some worlds normals broken =(
-    normal_list = None
+    if not use_gothic_normals:
+        normal_list = None
 
     mesh_obj, mesh = load_mesh_module.create_mesh_v2(name, vertex_list, face_list, normal_list=normal_list,
         uv_list=uv_list, blender_materials=materials_by_index, face_material_index_list=face_material_index_list)
@@ -216,7 +220,7 @@ def create_zen_mesh(name, mesh_dict, materials_by_index):
     return mesh_obj, mesh
 
 
-def import_zen_from_mesh_and_materials(mesh_dict, materials_dict, texture_folder_list, split_world=False):
+def import_zen_from_mesh_and_materials(mesh_dict, materials_dict, texture_folder_list, split_world=False, use_gothic_normals=False):
     global load_materials_module, load_mesh_module, utils_module
 
     if load_materials_module is None:
@@ -237,7 +241,7 @@ def import_zen_from_mesh_and_materials(mesh_dict, materials_dict, texture_folder
     utils_module.reset_scene()
 
     materials_by_index = load_materials_module.create_materials(materials_dict, texture_path_dict)
-    mesh_obj, mesh = create_zen_mesh('World', mesh_dict, materials_by_index)
+    mesh_obj, mesh = create_zen_mesh('World', mesh_dict, materials_by_index, use_gothic_normals=use_gothic_normals)
     if not mesh:
         return False
 
@@ -319,7 +323,9 @@ def load_from_gothic_hub_scripts(config_file_path):
         mesh_dict = zen_json_dict['mesh']
         materials_dict = zen_json_dict['materials']
 
-        import_zen_from_mesh_and_materials(mesh_dict, materials_dict, texture_folder_list, split_world=config['split_world'])
+        import_zen_from_mesh_and_materials(mesh_dict, materials_dict, texture_folder_list,
+                                           split_world=config['split_world'],
+                                           use_gothic_normals=config['use_gothic_normals'])
 
         json_data = json.dumps(materials_dict, indent=4, ensure_ascii=False)
         save_path_materials = save_folder / 'materials.json'

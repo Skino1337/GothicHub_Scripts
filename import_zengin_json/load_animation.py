@@ -82,6 +82,7 @@ def set_animation(armature_obj, armature, node_dict, animation_dict, rotation_mo
                 if not curve_pos[i]:
                     curve_pos[i] = animation_data.action.fcurves.new(curve_path_pos, index=i, action_group=bone_name_original)
                 curve_pos[i].keyframe_points.insert(frame, pos[i])
+                curve_pos[i].keyframe_points[-1].interpolation = 'LINEAR'
 
         if have_rot:
             rot_euler = rot_quat.to_euler()
@@ -90,6 +91,7 @@ def set_animation(armature_obj, armature, node_dict, animation_dict, rotation_mo
                 if curve_rot[i] is None:
                     curve_rot[i] = animation_data.action.fcurves.new(curve_path_rot, index=i, action_group=bone_name_original)
                 curve_rot[i].keyframe_points.insert(frame, rot_euler[i])
+                curve_rot[i].keyframe_points[-1].interpolation = 'LINEAR'
     else:
         curve_path_pos = f'pose.bones["{bone_name_original}"].location'
         curve_path_rot = f'pose.bones["{bone_name_original}"].rotation_quaternion'
@@ -108,12 +110,14 @@ def set_animation(armature_obj, armature, node_dict, animation_dict, rotation_mo
                 if not curve_pos[i]:
                     curve_pos[i] = animation_data.action.fcurves.new(curve_path_pos, index=i, action_group=bone_name_original)
                 curve_pos[i].keyframe_points.insert(frame, pos[i])
+                curve_pos[i].keyframe_points[-1].interpolation = 'LINEAR'
 
         if have_rot:
             for i in range(len(curve_rot)):
                 if curve_rot[i] is None:
                     curve_rot[i] = animation_data.action.fcurves.new(curve_path_rot, index=i, action_group=bone_name_original)
                 curve_rot[i].keyframe_points.insert(frame, rot_quat[i])
+                curve_rot[i].keyframe_points[-1].interpolation = 'LINEAR'
 
 
 def create_animation(armature_obj, armature, node_dict, animation_dict, rotation_mode_euler=True):

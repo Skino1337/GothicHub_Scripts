@@ -4,12 +4,13 @@ from importlib.resources import read_text
 from pathlib import Path
 import subprocess
 
-from zenkit import World, VirtualObject, VobType
+from zenkit import World, VirtualObject, VobType, VisualDecal, VisualType
 from zenkit import MovableObject, InteractiveObject, Container, Door, Fire, SoundMaterialType
 from zenkit import Trigger, TriggerList, TriggerScript, TriggerChangeLevel, TriggerWorldStart, TriggerUntouch
 from zenkit import Mover, MoverBehavior, MoverSpeedType, TriggerBatchMode, TriggerListTarget
 from zenkit import Sound, SoundDaytime
 from zenkit import ModelScript, AnimationFlags, AnimationDirection
+from zenkit import GameVersion
 
 import helpers
 
@@ -27,8 +28,6 @@ def pasrse_vob(vob_list):
 
     vob_dict_list = []
     for vob in vob_list:
-
-        # print(vob)
 
         class_name = vob.__class__.__name__
         rot = [vob.rotation.columns[0][0], vob.rotation.columns[1][0], vob.rotation.columns[2][0],
@@ -96,6 +95,17 @@ def pasrse_vob(vob_list):
             vob_dict['zbias'] = vob.bias
         if vob.ambient != False:
             vob_dict['isAmbient'] = vob.ambient
+
+        if vob.visual.type == VisualType.DECAL:
+            vob_index = vob_index + 1
+
+            vob_dict['visual']['dimension'] = [vob.visual.dimension.x, vob.visual.dimension.y]
+            vob_dict['visual']['offset'] = [vob.visual.offset.x, vob.visual.offset.y]
+            vob_dict['visual']['two_sided'] = vob.visual.two_sided
+            vob_dict['visual']['alpha_func'] = vob.visual.alpha_func.name
+            vob_dict['visual']['texture_anim_fps'] = vob.visual.texture_anim_fps
+            vob_dict['visual']['alpha_weight'] = vob.visual.alpha_weight
+            vob_dict['visual']['ignore_daylight'] = vob.visual.ignore_daylight
 
         # if isinstance(vob, MovableObject) or issubclass(vob, MovableObject):
         #     print(f'class or subclass of MovableObject, {vob.type.name}')
@@ -503,14 +513,14 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
     for zen_file_path in zen_file_path_list:
         relative_path = zen_file_path.relative_to(extract_path).parent  # / zen_file_path.stem
 
-        # if 'NEWWORLD.ZEN' not in str(zen_file_path):  # ARCHOLOS_SEWERS
+        # if 'FIRETREE_LAMP.ZEN' not in str(zen_file_path):  # ARCHOLOS_SEWERS, FIRETREE_LAMP, NEWWORLD.ZEN
         #     continue
 
         print(f'[WORLD] Start parse file: [{relative_path / zen_file_path.stem}.ZEN]')
 
         world = None
         try:
-            world = World.load(zen_file_path)
+            world = World.load(zen_file_path, version=GameVersion.GOTHIC2)
         except:
             print(f'[WORLD] ERROR: can\'t open: {relative_path / zen_file_path.stem}.ZEN')
             continue

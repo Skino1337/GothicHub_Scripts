@@ -34,22 +34,23 @@ def rename_armature_bones(armature_obj):
 
 
 def add_root_bone(armature_obj, root_name='root'):
-    root_pose_bone = None
+    old_root_pose_bone = None
     for pose_bone in armature_obj.pose.bones:
         if pose_bone.parent is None and len(pose_bone.children) > 0:
-            root_pose_bone = pose_bone
+            old_root_pose_bone = pose_bone
             break
 
     # no root bone
-    if root_pose_bone is None:
+    if old_root_pose_bone is None:
         return
 
     # check for already have root bone
-    if root_pose_bone.head.length < 0.01 and root_pose_bone.tail.x < 0.01 and root_pose_bone.tail.y < 0.01:
+    if old_root_pose_bone.head.length < 0.01 and old_root_pose_bone.tail.x < 0.01 and old_root_pose_bone.tail.y < 0.01:
         return
 
-    if root_pose_bone.name == root_name:
-        root_pose_bone.name = root_pose_bone.name + '1'
+    if old_root_pose_bone.name == root_name:
+        old_root_pose_bone.name = old_root_pose_bone.name + '1'
+        # old_root_pose_bone.name = 'old_' + old_root_pose_bone.name
 
     # create new bone available only in armature edit mode
     armature_obj.select_set(True)
@@ -57,12 +58,15 @@ def add_root_bone(armature_obj, root_name='root'):
     bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 
     # create new bones
-    root_edit_bone_new = armature_obj.data.edit_bones.new(root_name)
-    root_edit_bone_new.head = (0.0, 0.0, 0.0)
-    root_edit_bone_new.tail = (0.0, 0.0, 0.1)
+    new_root_edit_bone_new = armature_obj.data.edit_bones.new(root_name)
+
+    # Have some offset/relation bug, fixed zeroes co[1] instead of delete curve
+
+    new_root_edit_bone_new.head = (0.0, 0.0, 0.0)
+    new_root_edit_bone_new.tail = (0.0, 0.0, 0.1)
 
     # set relations
-    armature_obj.data.edit_bones[root_pose_bone.name].parent = root_edit_bone_new
+    armature_obj.data.edit_bones[old_root_pose_bone.name].parent = new_root_edit_bone_new
 
     bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     armature_obj.select_set(False)
@@ -77,23 +81,27 @@ def add_root_bone(armature_obj, root_name='root'):
         action.fcurves.new(f'pose.bones["{root_name}"].location', index=1, action_group=root_name)  # y
         action.fcurves.new(f'pose.bones["{root_name}"].location', index=2, action_group=root_name)  # z
 
-        old_root_x_fcurve = action.fcurves.find(f'pose.bones["{root_pose_bone.name}"].location', index=0)
-        old_root_y_fcurve = action.fcurves.find(f'pose.bones["{root_pose_bone.name}"].location', index=1)
-        # old_root_z_fcurve = action.fcurves.find(f'pose.bones["{root_pose_bone.name}"].location', index=2)
+        old_root_x_fcurve = action.fcurves.find(f'pose.bones["{old_root_pose_bone.name}"].location', index=0)
+        old_root_y_fcurve = action.fcurves.find(f'pose.bones["{old_root_pose_bone.name}"].location', index=1)
+        # old_root_z_fcurve = action.fcurves.find(f'pose.bones["{old_root_pose_bone.name}"].location', index=2)
 
-        root_x_fcurve = action.fcurves.find(f'pose.bones["{root_name}"].location', index=0)
+        new_root_x_fcurve = action.fcurves.find(f'pose.bones["{root_name}"].location', index=0)
         # root_y_fcurve = action.fcurves.find(f'pose.bones["{root_name}"].location', index=1)
-        root_z_fcurve = action.fcurves.find(f'pose.bones["{root_name}"].location', index=2)
+        new_root_z_fcurve = action.fcurves.find(f'pose.bones["{root_name}"].location', index=2)
 
-        if old_root_x_fcurve and root_x_fcurve:
-            for point in old_root_x_fcurve.keyframe_points:  # x = -x
-                root_x_fcurve.keyframe_points.insert(frame=point.co[0], value=point.co[1] * -1)
-            action.fcurves.remove(old_root_x_fcurve)
+        if old_root_x_fcurve and new_root_x_fcurve:
+            for keyframe_point in old_root_x_fcurve.keyframe_points:  # x = -x
+                new_root_x_fcurve.keyframe_points.insert(frame=keyframe_point.co[0], value=keyframe_point.co[1] * -1)
+                new_root_x_fcurve.keyframe_points[-1].interpolation = keyframe_point.interpolation
+                keyframe_point.co[1] = 0.0
+            # action.fcurves.remove(old_root_x_fcurve)
 
-        if old_root_y_fcurve and root_z_fcurve:
-            for point in old_root_y_fcurve.keyframe_points:  # z = y
-                root_z_fcurve.keyframe_points.insert(frame=point.co[0], value=point.co[1])
-            action.fcurves.remove(old_root_y_fcurve)
+        if old_root_y_fcurve and new_root_z_fcurve:
+            for keyframe_point in old_root_y_fcurve.keyframe_points:  # z = y
+                new_root_z_fcurve.keyframe_points.insert(frame=keyframe_point.co[0], value=keyframe_point.co[1])
+                new_root_z_fcurve.keyframe_points[-1].interpolation = keyframe_point.interpolation
+                keyframe_point.co[1] = 0.0
+            # action.fcurves.remove(old_root_y_fcurve)
 
 
 def reset_scene():
@@ -195,6 +203,10 @@ def export(file_path, config):
         bpy.ops.export_scene.fbx(
             filepath=str(file_path) + '.fbx',
             check_existing=False,
+
+            # Append a final bone to the end of each chain to specify last bone length
+            # (use this when you intend to edit the armature from exported data)
+            add_leaf_bones=False
         )
     else:
         bpy.ops.wm.save_as_mainfile(filepath=str(file_path) + '.blend')

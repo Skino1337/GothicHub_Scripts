@@ -80,10 +80,16 @@ def load_from_gothic_hub_scripts(config_file_path):
         file_name = man_json_file_path.stem.upper().replace('.MAN', '').replace('.JSON', '')
         relative_path = man_json_file_path.relative_to(intermediate_path).parent
 
-        # if 'HUMANS\\T_JUMPB' not in str(man_json_file_path):
+        # if 'HUMANS' not in str(man_json_file_path):  # HUMANS\\S_RUN
+        #     continue
+
+        # if 'S_RUNL' not in str(man_json_file_path):  # HUMANS\\S_RUN
+        #     continue
+
+        # if 'VDF_Anims' not in str(man_json_file_path):
         #     continue
         #
-        # if 'VDF_Anims' not in str(man_json_file_path):
+        # if 'GOTHIC II' not in str(man_json_file_path):
         #     continue
 
         man_json_data = Path(man_json_file_path).read_text()

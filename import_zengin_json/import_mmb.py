@@ -36,7 +36,7 @@ def import_module(module_name):
     return None
 
 
-def import_morph_mesh(mmb_json_data, texture_folder_list):
+def import_morph_mesh(mmb_json_data, texture_folder_list, use_gothic_normals=False):
     global import_mrm_module
 
     assert 'multiresolution_mesh' in mmb_json_data
@@ -50,7 +50,9 @@ def import_morph_mesh(mmb_json_data, texture_folder_list):
     matrix_rotation_x = Matrix.Rotation(math.radians(90.0), 4, 'X').to_4x4()
     matrix_mirror_y = Matrix.Scale(-1.0, 4, Vector([0.0, 1.0, 0.0]))
 
-    mesh_obj, mesh = import_mrm_module.import_multiresolution_mesh(mmb_json_data['multiresolution_mesh'], texture_folder_list)
+    mesh_obj, mesh = import_mrm_module.import_multiresolution_mesh(mmb_json_data['multiresolution_mesh'],
+                                                                   texture_folder_list,
+                                                                   use_gothic_normals=use_gothic_normals)
 
     # Rotate and mirror mesh
     mesh.transform(matrix_rotation_x)
@@ -110,7 +112,7 @@ def import_morph_mesh(mmb_json_data, texture_folder_list):
     return mesh_obj, mesh
 
 
-def import_morph_mesh_from_json(mmb_json_data, texture_folder_list):
+def import_morph_mesh_from_json(mmb_json_data, texture_folder_list, use_gothic_normals=False):
     global utils_module
 
     if utils_module is None:
@@ -120,7 +122,7 @@ def import_morph_mesh_from_json(mmb_json_data, texture_folder_list):
 
     utils_module.reset_scene()
 
-    mesh_obj, mesh = import_morph_mesh(mmb_json_data, texture_folder_list)
+    mesh_obj, mesh = import_morph_mesh(mmb_json_data, texture_folder_list, use_gothic_normals=use_gothic_normals)
 
 
 def load_from_gothic_hub_scripts(config_file_path):
@@ -161,7 +163,7 @@ def load_from_gothic_hub_scripts(config_file_path):
         mmb_json_data = mmb_json_file_path.read_text()
         mmb_json_dict = json.loads(mmb_json_data)
 
-        import_morph_mesh_from_json(mmb_json_dict, texture_folder_list)
+        import_morph_mesh_from_json(mmb_json_dict, texture_folder_list, use_gothic_normals=config['use_gothic_normals'])
 
         morph_mesh_script = dict()
         morph_mesh_script['type'] = 'morph_mesh_script'

@@ -8,6 +8,10 @@ def create_materials(zengin_materials, texture_path_dict, verbose=False):
                 img.depth == 4 * b)     # RGB+Alpha
 
     materials_by_index = dict()
+
+    assert len(zengin_materials) > 0
+    assert len(texture_path_dict) > 0
+
     for zengin_material in zengin_materials:
         material_name = zengin_material['name'].upper()
         if material_name in bpy.data.materials:
@@ -20,6 +24,7 @@ def create_materials(zengin_materials, texture_path_dict, verbose=False):
         elif len(zengin_material['name']) > 0:
             zengin_texture_name = zengin_material['name'].upper()
         else:
+            # assert False, 'zengin_texture_name is None'
             continue
         image = None
         if zengin_texture_name in texture_path_dict:
@@ -30,6 +35,13 @@ def create_materials(zengin_materials, texture_path_dict, verbose=False):
             # well, if u can fix textures (at least as an option) that would be good,
             # because texture = just material property in vob file, not real path
             # so it can save material-texture field even if there is not file
+
+            # if not image:
+            #     print(f'if not image: {image=}')
+        else:
+            texture_name = zengin_texture_name.upper().split(':')[0]
+            if texture_name not in ['P', 'PI', 'PN', 'S', 'GHOSTOCCLUDER', 'SUN_BLOCKER']:
+                print(f'[MATERIAL] WARNING: Texture not found: "{zengin_texture_name}"')
 
         material = bpy.data.materials.new(name=material_name)
         material.use_nodes = True
@@ -76,8 +88,5 @@ def create_materials(zengin_materials, texture_path_dict, verbose=False):
             principled_bsdf.inputs['Base Color'].default_value = zengin_material['color']
 
         materials_by_index[zengin_material['index']] = material
-
-    if verbose:
-        print(f'Materials created: {len(materials_by_index)}')
 
     return materials_by_index

@@ -34,7 +34,7 @@ def import_module(module_name):
     return None
 
 
-def import_multiresolution_mesh(multiresolution_mesh_dict, texture_folder_list):
+def import_multiresolution_mesh(multiresolution_mesh_dict, texture_folder_list, use_gothic_normals=False, mesh_name='Mesh'):
     global load_mesh_module, load_materials_module, utils_module
 
     assert 'positions' in multiresolution_mesh_dict
@@ -90,7 +90,10 @@ def import_multiresolution_mesh(multiresolution_mesh_dict, texture_folder_list):
         texture_path_dict = utils_module.get_texture_path_dict(texture_folder_list)
         materials_by_index = load_materials_module.create_materials(materials_dict, texture_path_dict)
 
-    mesh_obj, mesh = load_mesh_module.create_mesh_v2('Mesh', vertex_list, face_list, normal_list=normal_list,
+    if not use_gothic_normals:
+        normal_list = []
+
+    mesh_obj, mesh = load_mesh_module.create_mesh_v2(mesh_name, vertex_list, face_list, normal_list=normal_list,
         uv_list=uv_list, blender_materials=materials_by_index, face_material_index_list=face_material_index_list)
 
     return mesh_obj, mesh
@@ -153,7 +156,7 @@ def load_from_gothic_hub_scripts(config_file_path):
         # if 'MOD_KM_Meshes' not in str(mrm_json_file_path):  # Gothic II
         #     continue
 
-        # if '1H_HAMMER_GODENDAR' not in str(mrm_json_file_path):  # NW_HARBOUR_BARREL_01
+        # if 'NAKED' not in str(mrm_json_file_path):  # NW_HARBOUR_BARREL_01
         #     continue
 
         mrm_json_data = mrm_json_file_path.read_text()

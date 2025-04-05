@@ -71,13 +71,12 @@ def parse_materials(material_list):
         # G1
 
         # ValueError: 32 is not a valid AnimationMapping
-        alpha_function = 'NONE'
+        alpha_function = 'DEFAULT'
         try:
             alpha_function = material.alpha_function.name
         except ValueError as error:
-            print(f'[MATERIAL] WARNING: Material have wrong value in parameter [alphaFunc], set default value to "NONE". Error: "{error}"')
-        if alpha_function != 'NONE':
-            material_dict['alphaFunc'] = alpha_function
+            print(f'[MATERIAL] WARNING: Material have wrong value in parameter [alphaFunc], set default value to "DEFAULT". Error: "{error}"')
+        material_dict['alphaFunc'] = alpha_function
 
         material_dict_list.append(material_dict)
 

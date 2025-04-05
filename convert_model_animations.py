@@ -68,7 +68,7 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
         game_type_folder = str(relative_path).split('/')[0]
         game_type_folder = game_type_folder.split('\\')[0]
 
-        # if 'HUMANS\\T_JUMPB' not in str(man_file_path):
+        # if 'HUMANS' not in str(man_file_path):
         #     continue
         #
         # if 'VDF_Anims' not in str(man_file_path):

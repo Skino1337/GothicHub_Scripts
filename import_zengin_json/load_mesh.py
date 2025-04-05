@@ -278,6 +278,9 @@ def create_mesh_v2(name, vertex_list, face_list,
         mesh_b.to_mesh(mesh)
         mesh_b.free()
 
+    # Use smooth anyway
+    mesh.polygons.foreach_set('use_smooth', [True] * len(mesh.polygons))
+
     # Normals
     if normal_list:
         assert len(mesh.polygons) == len(normal_list)
@@ -289,7 +292,6 @@ def create_mesh_v2(name, vertex_list, face_list,
 
         assert len(mesh.loops) == len(loop_normal_list)
 
-        mesh.polygons.foreach_set('use_smooth', [True] * len(mesh.polygons))
         mesh.normals_split_custom_set(loop_normal_list)
 
     mesh_obj = bpy.data.objects.new(mesh.name, mesh)

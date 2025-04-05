@@ -72,7 +72,7 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
         # if 'VDF_Meshes_Addon' not in str(mrm_file_path):  # Gothic II
         #     continue
 
-        # if '1H_HAMMER_GODENDAR' not in str(mrm_file_path):  # NW_HARBOUR_BARREL_01
+        # if 'ITMI_BEER' not in str(mrm_file_path):  # NW_HARBOUR_BARREL_01
         #     continue
 
         multiresolution_mesh = None
@@ -81,7 +81,6 @@ def convert(extract_path, intermediate_path, convert_path, blender_executable_fi
         except:
             print(f'[MULTIRESOLUTION MESH] ERROR: can\'t open: {relative_path / mrm_file_path.stem}.MRM')
             continue
-
 
         multiresolution_mesh_dict = parse_multiresolution_mesh(multiresolution_mesh)
 
